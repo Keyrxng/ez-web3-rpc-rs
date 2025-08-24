@@ -101,7 +101,7 @@ impl RpcHandler {
         for attempt in 0..self.proxy_settings.retry_count {
             match self.try_send_request(&request, &fastest_rpc).await {
                 Ok(response) => {
-                    self.log(attempt, &fastest_rpc, "RPC request succeed");
+                    self.log(attempt, &fastest_rpc, "RPC request succeeded", LogLevel::Debug);
                     return Ok(response);
             }
             Err(e) => {
@@ -134,39 +134,15 @@ impl RpcHandler {
             Err(RpcHandlerError::JsonRpc(url.to_owned()))
         }
     }
-    fn log(&self, attempt: u32, url: &str, msg: &str) {
+    fn log(&self, attempt: u32, url: &str, msg: &str, event_level: LogLevel) {
         let settings = self.config.settings.as_ref().unwrap();
-        match settings.log_level {
-            LogLevel::Info => tracing::info!(
-                network = %settings.network_name,
-                attempt = attempt + 1,
-                url = %url,
-                "{msg}"
-            ),
-            LogLevel::Error => tracing::error!(
-                network = %settings.network_name,
-                attempt = attempt + 1,
-                url = %url,
-                "{msg}"
-            ),
-            LogLevel::Debug => tracing::debug!(
-                network = %settings.network_name,
-                attempt = attempt + 1,
-                url = %url,
-                "{msg}"
-            ),
-            LogLevel::Trace => tracing::trace!(
-                network = %settings.network_name,
-                attempt = attempt + 1,
-                url = %url,
-                "{msg}"
-            ),
-            LogLevel::Warn => tracing::warn!(
-                network = %settings.network_name,
-                attempt = attempt + 1,
-                url = %url,
-                "{msg}"
-            )
+        if !settings.log_level.allows(&event_level) { return; }
+        match event_level {
+            LogLevel::Error => tracing::error!(network=%settings.network_name, attempt=attempt+1, url=%url, "{msg}"),
+            LogLevel::Warn => tracing::warn!(network=%settings.network_name, attempt=attempt+1, url=%url, "{msg}"),
+            LogLevel::Info => tracing::info!(network=%settings.network_name, attempt=attempt+1, url=%url, "{msg}"),
+            LogLevel::Debug => tracing::debug!(network=%settings.network_name, attempt=attempt+1, url=%url, "{msg}"),
+            LogLevel::Trace => tracing::trace!(network=%settings.network_name, attempt=attempt+1, url=%url, "{msg}"),
         }
     }
 }

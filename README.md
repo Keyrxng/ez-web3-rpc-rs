@@ -6,11 +6,11 @@ High‑performance, asynchronous JSON‑RPC handler for EVM chains with automati
 
 ## Why
 
-If you routinely interact with public RPC endpoints you know the pain: inconsistent latency, silent stalls, and manual curation of provider lists. This crate encapsulates the boring bits so your application can talk to “one logical provider” that automatically prefers fast/healthy endpoints and retries transient failures.
+If you routinely interact with public Web3 RPC endpoints you know the pain: inconsistent latency, silent stalls, and manual curation of provider lists. This crate encapsulates the boring bits so your application can talk to “one logical provider” that automatically prefers fast/healthy endpoints and retries transient failures.
 
 ## Benchmarks (early snapshot)
 
-Single-run micro benchmark on network `100` (Gnosis) over 20 iterations (cold start + 19 warm): see `benchmarks/results/bench-100-20iter-2025-08-24T17-10-27.456060300+00-00.md` for raw table.
+Single-run micro benchmark on network `100` (Gnosis) over 20 iterations (cold start + 19 warm).
 
 High-level:
 

@@ -28,6 +28,20 @@ pub enum LogLevel {
     Debug,
     Trace
 }
+
+impl LogLevel {
+    // Returns true if a configured log level (self) should allow emitting an event of 'event_level'.
+    pub fn allows(&self, event_level: &LogLevel) -> bool {
+        use LogLevel::*;
+        match self {
+            Error => matches!(event_level, Error),
+            Warn => matches!(event_level, Error | Warn),
+            Info => matches!(event_level, Error | Warn | Info),
+            Debug => matches!(event_level, Error | Warn | Info | Debug),
+            Trace => true,
+        }
+    }
+}
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct LatencyRecord {
     pub latency_ms: u64,

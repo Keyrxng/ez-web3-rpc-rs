@@ -4,7 +4,6 @@ pub mod rpc_service;
 pub mod types;
 pub mod chainlist;
 pub mod jsonrpc;
-pub mod storage;
 
 pub use error::{RpcHandlerError, Result};
 
