@@ -64,5 +64,9 @@ async fn main() -> Result<()> {
 
     println!("CHAIN IDS: {:?}", chains);
 
+    let latenciess = handler.get_latencies();
+
+    println!("All Latencies: {:?}", latenciess);
+
     Ok(())
 }

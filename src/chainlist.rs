@@ -8,7 +8,7 @@ pub fn initialize_chain_data(chains_to_retain: Vec<NetworkId>) {
     /*
      * Calling `.lock()` on a mutex gives us a guard object that holds the lock
      * until it goes out of scope. Each lock is placed into own scope so that it
-     * is released immediately after data is filtered and printed.
+     * is released immediately after data is filtered.
      *
      * This avoids holding multiple locks at the same time, which reduces the risk
      * of deadlocks and improves concurrency.
@@ -17,31 +17,17 @@ pub fn initialize_chain_data(chains_to_retain: Vec<NetworkId>) {
     {
         let mut chain_data = CHAIN_DATA.lock();
         chain_data.retain(|chain| chains_to_retain.contains(&chain.chain_id));
-        println!(
-            "Retained {} chains based on provided network IDs.",
-            chain_data.len()
-        );
     }
 
     {
         let mut chain_ids = CHAIN_IDS.lock();
         chain_ids.retain(|(id, _)| chains_to_retain.contains(id));
-        println!(
-            "Retained {} chain IDs based on provided network IDs.",
-            chain_ids.len()
-        );
     }
 
     {
         let mut extra_rpcs = EXTRA_RPCS_DATA.lock();
         extra_rpcs.retain(|(id,_)| chains_to_retain.contains(id));
-        println!(
-            "Retained {} extra RPCs based on provided network IDs.",
-            extra_rpcs.len()
-        );
     }
-
-    println!("ChainList data initialized successfully.");
 }
 
 pub fn get_chain_ids() -> Vec<(NetworkId, String)> {
