@@ -1,6 +1,8 @@
 use serde::{Deserialize, Serialize};
 use url::Url;
 
+use crate::chainlist::{get_chain_info};
+
 pub type NetworkId = u64;
 pub type NetworkName = String;
 
@@ -65,13 +67,13 @@ impl HandlerConfig {
         Self {
             network_id,
             settings: Some(HandlerSettings {
-                log_level: LogLevel::Info,
+                log_level: LogLevel::Error,
                 tracking: Tracking::Limited,
-                network_rpcs: vec![], // TODO: chainlist.rs
-                network_name: String::new(), // TODO: chainlist.rs 
+                network_rpcs: Vec::new(), 
+                network_name: get_chain_info(network_id).unwrap().name,
                 rpc_probe_timeout_ms: 3000,
-                proxy_settings: None,
-                wipe_chain_data: WipeChainData::new(false, vec![]) // TODO: chainlist.rs methods
+                proxy_settings: Some(ProxySettings::default()),
+                wipe_chain_data: WipeChainData::new(network_id)
             })
         }
     }
@@ -84,8 +86,8 @@ pub struct WipeChainData {
 }
 
 impl WipeChainData {
-    pub fn new(clear_data: bool, retain_these_chains: Vec<NetworkId>) -> Self {
-        Self { clear_data, retain_these_chains }
+    fn new(network_id: NetworkId) -> Self {
+        Self { clear_data: true, retain_these_chains: [network_id].to_vec() }
     }
 }
 
