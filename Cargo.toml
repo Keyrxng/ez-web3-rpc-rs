@@ -1,6 +1,21 @@
 [package]
-name = "ez-web3-rpc-rust"
+name = "ez_web3_rpc"
 version = "0.1.0"
 edition = "2024"
+description = "A high-performance, asynchronous Web3 RPC handler with automatic failover, latency tracking, and smart RPC selection"
+license = "MIT"
+repository = "https://github.com/keyrxng/ez-web3-rpc-rust"
+homepage = "https://github.com/keyrxng/ez-web3-rpc-rust"
+documentation = "https://docs.rs/ez-web3-rpc"
+keywords = ["web3", "rpc", "ethereum", "blockchain", "async"]
+categories = ["api-bindings", "asynchronous", "web-programming"]
+authors = ["keyrxng"]
+readme = "README.md"
 
 [dependencies]
+
+
+[build-dependencies]
+tokio = { version = "1.47.1", features = ["full"] }
+reqwest = { version = "0.12.23", features = ["json"] }
+serde = { version = "1.0.219", features = ["derive"] }
