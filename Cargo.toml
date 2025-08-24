@@ -12,6 +12,10 @@ categories = ["api-bindings", "asynchronous", "web-programming"]
 authors = ["keyrxng"]
 readme = "README.md"
 
+[[bin]]
+name = "gnosis_latency"
+path = "examples/gnosis_latency.rs"
+
 [dependencies]
 anyhow = "1.0.99"
 async-trait = "0.1.89"

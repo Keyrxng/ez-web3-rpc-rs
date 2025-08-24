@@ -22,7 +22,7 @@ impl RpcTestingService {
         let start = Instant::now();
 
         let test_req = JsonRpcRequest {
-            id: 1,
+            id: Some(1),
             jsonrpc: "2.0".to_string(),
             method: "eth_blockNumber".to_string(),
             params: serde_json::Value::Array(vec![]),
