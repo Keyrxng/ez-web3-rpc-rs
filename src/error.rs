@@ -6,8 +6,8 @@ pub enum RpcHandlerError {
     Network(#[from] reqwest::Error),
 
     #[error("JSON-RPC error: {0}")]
-    JsonRpc(#[from] serde_json::Error),
-
+    JsonRpc(String),
+    
     #[error("No available RPCs for network {network_id}")]
     NoAvailableRpcs { network_id: u64 },
 
@@ -17,6 +17,5 @@ pub enum RpcHandlerError {
     #[error("All endpoints failed to process your request")]
     AllEndpointsFailed,
 }
-
 
 pub type Result<T> = std::result::Result<T, RpcHandlerError>;

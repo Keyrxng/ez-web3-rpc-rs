@@ -15,3 +15,5 @@ pub use types::{
 pub use jsonrpc::{
     JsonRpcRequest, JsonRpcResponse, JsonRpcError
 };
+
+pub use handler::RpcHandler;

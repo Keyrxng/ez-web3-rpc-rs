@@ -13,6 +13,7 @@ authors = ["keyrxng"]
 readme = "README.md"
 
 [dependencies]
+anyhow = "1.0.99"
 async-trait = "0.1.89"
 dashmap = "6.1.0"
 futures = "0.3.31"
