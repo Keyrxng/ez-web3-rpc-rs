@@ -13,7 +13,19 @@ authors = ["keyrxng"]
 readme = "README.md"
 
 [dependencies]
-
+async-trait = "0.1.89"
+dashmap = "6.1.0"
+futures = "0.3.31"
+parking_lot = "0.12.4"
+reqwest = { version = "0.12.23", features = ["json"]}
+serde = "1.0.219"
+serde_json = "1.0.142"
+thiserror = "2.0.15"
+tokio = { version = "1.47.1", features = ["full"] }
+tokio-util = "0.7.16"
+tracing = "0.1.41"
+tracing-subscriber = "0.3.19"
+url = { version = "2.5.4", features = ["serde"] }
 
 [build-dependencies]
 tokio = { version = "1.47.1", features = ["full"] }

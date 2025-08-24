@@ -39,14 +39,18 @@ pub struct LatencyRecord {
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct HandlerConfig {
     pub network_id: NetworkId,
-    pub settings: {
+    pub settings: Option<HandlerSettings>
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct HandlerSettings {
         pub log_level: LogLevel,
         pub tracking: Tracking,
         pub network_rpcs: Vec<Rpc>,
+        pub network_name: NetworkName,
         pub rpc_probe_timeout_ms: u64,
         pub proxy_settings: Option<ProxySettings>,
         pub wipe_chain_data: WipeChainData
-    }
 }
 
 /**
@@ -60,7 +64,7 @@ impl HandlerConfig {
     pub fn new(network_id: NetworkId) -> Self {
         Self {
             network_id,
-            settings: {
+            settings: Some(HandlerSettings {
                 log_level: LogLevel::Info,
                 tracking: Tracking::Limited,
                 network_rpcs: vec![], // TODO: chainlist.rs
@@ -68,7 +72,7 @@ impl HandlerConfig {
                 rpc_probe_timeout_ms: 3000,
                 proxy_settings: None,
                 wipe_chain_data: WipeChainData::new(false, vec![]) // TODO: chainlist.rs methods
-            }
+            })
         }
     }
 }
@@ -87,8 +91,9 @@ impl WipeChainData {
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct ProxySettings {
-    pub struct retry_count: u32,
+    pub retry_count: u32,
     pub retry_delay_ms: u64,
+    pub rpc_call_timeout_ms: u64
 }
 
 /**
@@ -117,16 +122,17 @@ mod system_time_serde {
     use serde::{Deserialize, Deserializer, Serialize, Serializer};
     use std::time::{SystemTime, UNIX_EPOCH};
 
-    pub fn serialize<S: Serializer>(time: &SystemTime, serializer: S) -> Result<S::Ok, S::Error> {
-        let duration = time
-            .duration_since(UNIX_EPOCH)
-            .map_err(serde::ser::Error::custom)?;
-        duration.as_secs().serialize(serializer)
-    }
+    pub fn serialize<S: Serializer>(time: &SystemTime, serializer: S) -> Result<S::Ok, S::Error>
+        {
+            let duration = time
+                .duration_since(UNIX_EPOCH)
+                .map_err(serde::ser::Error::custom)?;
+            duration.as_secs().serialize(serializer)
+        }
 
-
-    pub fn deserialize<'de, D: Deserializer<'de>>(deserializer: D) -> Result<SystemTime, D::Error> {
-        let secs: u64::deserialize(deserializer)?;
-        Ok(UNIX_EPOCH + std::time::Duration::from_secs(secs))
-    }
+    pub fn deserialize<'de, D: Deserializer<'de>>(deserializer: D) -> Result<SystemTime, D::Error>
+        {
+            let secs = u64::deserialize(deserializer)?;
+            Ok(UNIX_EPOCH + std::time::Duration::from_secs(secs))
+        }
 }
