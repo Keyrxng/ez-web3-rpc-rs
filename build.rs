@@ -1,6 +1,6 @@
 use std::env;
 use std::fs;
-use std:path::Path;
+use std::path::Path;
 
 /**
  * This pulls all of the data used by ChainList prior to building the main crate
@@ -14,6 +14,32 @@ fn main() {
     let chain_data = runtime.block_on(async {
         generate_chainlist_data().await
     });
+
+
+    match chain_data {
+        Ok(data) => {
+            fs::write(&dest_path, data).unwrap();
+            println!("Generated chainlist data at: {}", dest_path.display());
+        }
+        Err(e) => {
+            eprintln!("Failed to generate chainlist data: {}", e);
+            let fallback = r#"
+pub static CHAIN_DATA: std::sync::LazyLock<std::sync::Arc<parking_lot::Mutex<Vec<ChainInfo>>>> = std::sync::LazyLock::new(|| {
+    std::sync::Arc::new(parking_lot::Mutex::new(vec![]))
+});
+
+pub const CHAIN_IDS: std::sync::LazyLock<std::sync::Arc<parking_lot::Mutex<Vec<(NetworkId, String)>>>> = std::sync::LazyLock::new(|| {
+    std::sync::Arc::new(parking_lot::Mutex::new(vec![]))
+});
+
+pub const EXTRA_RPCS: std::sync::LazyLock<std::sync::Arc<parking_lot::Mutex<Vec<String>>>> = std::sync::LazyLock::new(|| {
+    std::sync::Arc::new(parking_lot::Mutex::new(vec![]))
+});
+"#;
+
+            fs::write(&dest_path, fallback).unwrap();
+        }
+    }
 
 
 
@@ -34,12 +60,7 @@ fn main() {
  * ===
  * 
  * In context, the below method returns any type of error (network, parsing, file I/O) while ensuring they're safe to use in the async/multi-thread env.
- * 
- * 
- * 
  */
-
-
 
 async fn generate_chainlist_data() -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
     use serde::{Deserialize};
@@ -212,5 +233,28 @@ fn remove_trailing_slash(rpc: &str) -> String {
         rpc[..rpc.len()-1].to_string()
     }else{
         rpc.to_string()
+    }
+}
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_remove_trailing_slash_basic() {
+        assert_eq!(remove_trailing_slash("http://foo.com/"), "http://foo.com");
+        assert_eq!(remove_trailing_slash("http://foo.com"), "http://foo.com");
+        assert_eq!(remove_trailing_slash("/"), "");
+        assert_eq!(remove_trailing_slash("") , "");
+    }
+
+    #[tokio::test]
+    async fn test_generate_chainlist_data_returns_string() {
+        let result = generate_chainlist_data().await;
+        assert!(result.is_ok());
+        let data = result.unwrap();
+        assert!(data.contains("CHAIN_DATA"));
+        assert!(data.len() > 0);
     }
 }
