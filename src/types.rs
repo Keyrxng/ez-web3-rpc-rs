@@ -69,6 +69,29 @@ pub struct HandlerSettings {
         pub wipe_chain_data: WipeChainData
 }
 
+impl Default for HandlerSettings {
+    fn default() -> Self {
+        Self {
+            log_level: LogLevel::Info,
+            tracking: Tracking::Limited,
+            network_rpcs: Vec::new(),
+            network_name: "Unknown".to_string(),
+            rpc_probe_timeout_ms: 3000,
+            proxy_settings: Some(ProxySettings::default()),
+            wipe_chain_data: WipeChainData::default(),
+        }
+    }
+}
+
+impl Default for WipeChainData {
+    fn default() -> Self {
+        Self {
+            clear_data: false,
+            retain_these_chains: Vec::new(),
+        }
+    }
+}
+
 /**
  * Think of `impl xyz`` as a class, with `new()` being the constructor.
  * 
